@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mon IA</title>
+<style>body{margin:0;font-family:system-ui;background:#000;color:#fff;display:flex;flex-direction:column;height:100vh}#chat{flex:1;overflow:auto;padding:15px;display:flex;flex-direction:column;gap:10px}.msg{max-width:90%;padding:12px 16px;border-radius:18px}.user{align-self:flex-end;background:#fff;color:#000}.bot{align-self:flex-start;background:#222}.bot img{width:100%;border-radius:12px;margin-top:8px}#bar{display:flex;gap:8px;padding:12px;border-top:1px solid #222}input{flex:1;padding:14px;border-radius:25px;border:1px solid #333;background:#111;color:#fff}button{width:48px;height:48px;border-radius:50%;border:none;background:#fff}</style>
+</head>
+<body>
+<div id="chat"><div class="msg bot">Tape /img suivi de ton idée. Ex: /img un chat astronaute</div></div>
+<div id="bar"><input id="q" placeholder="/img ..."><button onclick="envoyer()">↑</button></div>
+<script>
+function envoyer(){
+  const input=document.getElementById('q'); const txt=input.value.trim(); if(!txt)return;
+  const chat=document.getElementById('chat');
+  chat.innerHTML+=`<div class="msg user">${txt}</div>`; input.value='';
+  
+  let prompt = txt.replace("/img","").replace("/image","").trim();
+  // Si tu tapes juste du texte normal, on génère quand même une image si tu as mis /img
+  if(!txt.toLowerCase().startsWith("/img") && !txt.toLowerCase().startsWith("/image")){
+    chat.innerHTML+=`<div class="msg bot">Pour une image, commence par /img<br>Ex: /img a beautiful castle at sunset</div>`;
+    return;
+  }
+  const id=Date.now();
+  const finalPrompt = encodeURIComponent(prompt + " , high detail, photorealistic, 8k");
+  const url = `https://image.pollinations.ai/prompt/${finalPrompt}?model=flux&enhance=true&width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*1000000)}`;
+  chat.innerHTML+=`<div class="msg bot"><i>${prompt}</i><br><img id="i${id}" src="${url}" onload="this.scrollIntoView()" /></div>`;
+  chat.scrollTop=chat.scrollHeight;
+}
+document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')envoyer()});
+</script>
+</body>
+</html>
